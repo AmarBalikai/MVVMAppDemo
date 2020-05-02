@@ -22,7 +22,7 @@ class ViewModelBlogInformation(@NotNull application: Application): ViewModel()
     /**
      * Calling API
      */
-    fun getCountryInformation() {
+    fun getBlogInformation() {
     //    repositoryViewModel.retrieveCountryFeaturesData(this)
     }
 }

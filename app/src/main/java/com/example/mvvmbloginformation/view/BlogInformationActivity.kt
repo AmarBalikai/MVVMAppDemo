@@ -1,5 +1,6 @@
 package com.example.mvvmbloginformation.view
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvvmbloginformation.R
 import com.example.mvvmbloginformation.adapter.AdapterBlog
-import com.example.mvvmbloginformation.adapter.AdapterBlogs
+
+import com.example.mvvmbloginformation.utils.NetworkConnection
 import com.example.mvvmbloginformation.viewmodel.ViewModelBlogInformation
 import kotlinx.android.synthetic.main.activity_blog_information.*
 
@@ -22,6 +24,7 @@ class BlogInformationActivity : AppCompatActivity() {
     private lateinit var mAdapter: AdapterBlog
     private lateinit var linearLayoutManager: LinearLayoutManager
 
+    @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +35,7 @@ class BlogInformationActivity : AppCompatActivity() {
 
 
         swipeToRefresh.setOnRefreshListener {
-            getBlogsData()
+            getBlogFromViewModel()
 
         }
 
@@ -96,28 +99,30 @@ class BlogInformationActivity : AppCompatActivity() {
             }
         }
     }
+
     /**
      * This method for get data from the viewModel
      */
-    private fun getCountryFeaturesData() {
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun getBlogFromViewModel() {
 
 
-            if (NetworkConnection.isNetworkConnected()) {
-                showDialog()
-                mDataViewModel.getCountryInformation()
-            } else {
-                if (swipeToRefresh.isRefreshing) {
-                    swipeToRefresh.isRefreshing = false
-                }
-                Toast.makeText(
-                    applicationContext,
-                    getString(R.string.device_not_connected_to_internet),
-                    Toast.LENGTH_LONG
-                ).show()
+        if (NetworkConnection.isNetworkConnected()) {
+            showDialog()
+            mViewModelBlogInformation.getBlogInformation()
+        } else {
+            if (swipeToRefresh.isRefreshing) {
+                swipeToRefresh.isRefreshing = false
             }
-
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.device_not_connected_to_internet),
+                Toast.LENGTH_LONG
+            ).show()
         }
 
     }
 
 }
+
+
