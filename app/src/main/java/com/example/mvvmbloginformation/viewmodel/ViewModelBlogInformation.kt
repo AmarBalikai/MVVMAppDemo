@@ -11,27 +11,26 @@ import org.jetbrains.annotations.NotNull
 class ViewModelBlogInformation(@NotNull application: Application): AndroidViewModel(application),
     ResponseCallback
 {
-
-    private lateinit var repositoryViewModel: RepositoryViewModel
+    private var repositoryViewModel: RepositoryViewModel = RepositoryViewModel()
     var mBlogResponse: MutableLiveData<ModelBlogInformation> =
         MutableLiveData<ModelBlogInformation>()
 
     init {
-      //  repositoryViewModel = RepositoryViewModel(objApplication)
-        //repositoryViewModel.retrieveCountryFeaturesData(this)
+        repositoryViewModel.retrieveBlogsData(this)
     }
     /**
      * Calling API
      */
     fun getBlogInformation() {
-    //    repositoryViewModel.retrieveCountryFeaturesData(this)
+        repositoryViewModel.retrieveBlogsData(this)
     }
 
     override fun onSuccess(data: MutableLiveData<ModelBlogInformation>?) {
-
+        mBlogResponse.value=data?.value
     }
 
     override fun onError(error: String?) {
-
+        mBlogResponse.value?.error= error.toString()
+        mBlogResponse.value?.isError=true
     }
 }

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvvmbloginformation.R
 import com.example.mvvmbloginformation.adapter.AdapterBlog
+import com.example.mvvmbloginformation.utils.Constant.Companion.somethingWentWrong
 
 import com.example.mvvmbloginformation.utils.NetworkConnection
 import com.example.mvvmbloginformation.viewmodel.ViewModelBlogInformation
@@ -29,7 +30,9 @@ class BlogInformationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blog_information)
-        mViewModelBlogInformation = ViewModelProvider(this).get(ViewModelBlogInformation::class.java)
+
+        mViewModelBlogInformation =
+            ViewModelProvider(this).get(ViewModelBlogInformation::class.java)
         setupDialog()
 
 
@@ -47,7 +50,10 @@ class BlogInformationActivity : AppCompatActivity() {
         mViewModelBlogInformation.mBlogResponse.observe(this, Observer {
             hideDialog()
             swipeToRefresh.isRefreshing = false
-            mAdapter.setList(it.data)
+            if (!it.isError)
+                mAdapter.setList(it.data)
+            else
+                Toast.makeText(this,somethingWentWrong,Toast.LENGTH_SHORT).show()
 
         })
 
