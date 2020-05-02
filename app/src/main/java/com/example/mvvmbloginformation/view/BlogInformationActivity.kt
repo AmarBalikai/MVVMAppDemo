@@ -29,8 +29,7 @@ class BlogInformationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blog_information)
-        mViewModelBlogInformation =
-            ViewModelProvider(this).get(ViewModelBlogInformation::class.java)
+        mViewModelBlogInformation = ViewModelProvider(this).get(ViewModelBlogInformation::class.java)
         setupDialog()
 
 

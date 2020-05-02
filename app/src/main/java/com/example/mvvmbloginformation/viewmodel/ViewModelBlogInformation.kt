@@ -1,22 +1,23 @@
 package com.example.mvvmbloginformation.viewmodel
 
 import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.example.mvvmbloginformation.callbacks.ResponseCallback
 import com.example.mvvmbloginformation.model.ModelBlogInformation
+import com.example.mvvmbloginformation.repository.RepositoryViewModel
 import org.jetbrains.annotations.NotNull
 
-class ViewModelBlogInformation(@NotNull application: Application): ViewModel()
+class ViewModelBlogInformation(@NotNull application: Application): AndroidViewModel(application),
+    ResponseCallback
 {
 
-    //private lateinit var repositoryViewModel: RepositoryViewModel
+    private lateinit var repositoryViewModel: RepositoryViewModel
     var mBlogResponse: MutableLiveData<ModelBlogInformation> =
         MutableLiveData<ModelBlogInformation>()
 
-    //var apiFailResponse= MutableLiveData<ApiFailModel>()
     init {
       //  repositoryViewModel = RepositoryViewModel(objApplication)
-        //apiFailResponse.value= ApiFailModel()
         //repositoryViewModel.retrieveCountryFeaturesData(this)
     }
     /**
@@ -24,5 +25,13 @@ class ViewModelBlogInformation(@NotNull application: Application): ViewModel()
      */
     fun getBlogInformation() {
     //    repositoryViewModel.retrieveCountryFeaturesData(this)
+    }
+
+    override fun onSuccess(data: MutableLiveData<ModelBlogInformation>?) {
+
+    }
+
+    override fun onError(error: String?) {
+
     }
 }
