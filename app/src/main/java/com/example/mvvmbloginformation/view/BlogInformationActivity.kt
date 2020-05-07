@@ -12,9 +12,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mvvmbloginformation.R
 import com.example.mvvmbloginformation.adapter.AdapterBlog
+import com.example.mvvmbloginformation.utils.Constant
 import com.example.mvvmbloginformation.utils.Constant.Companion.somethingWentWrong
 
 import com.example.mvvmbloginformation.utils.NetworkConnection
+import com.example.mvvmbloginformation.utils.toast
 import com.example.mvvmbloginformation.viewmodel.ViewModelBlogInformation
 import kotlinx.android.synthetic.main.activity_blog_information.*
 
@@ -24,42 +26,68 @@ class BlogInformationActivity : AppCompatActivity() {
     private lateinit var dialog: AlertDialog
     private lateinit var mAdapter: AdapterBlog
     private lateinit var linearLayoutManager: LinearLayoutManager
+    private var isSwipeToRefreshCall: Boolean = false
 
     @SuppressLint("NewApi")
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blog_information)
-
+        /**
+         * Initialize ViewModel
+         * */
         mViewModelBlogInformation =
-            ViewModelProvider(this).get(ViewModelBlogInformation::class.java)
+            ViewModelProvider(this).get(ViewModelBlogInformation::class.java) //mViewModelStore
+        /**
+         * Initialise Dialog
+         * */
         setupDialog()
 
-
+        /**
+         * Swipe to refresh listener
+         * */
         swipeToRefresh.setOnRefreshListener {
+            isSwipeToRefreshCall = true
             getBlogFromViewModel()
-
         }
-
-
+        /**
+         * Adapter Initialize
+         * */
         mAdapter = AdapterBlog(ArrayList(), this)
         linearLayoutManager = LinearLayoutManager(this)
-        blog_list.layoutManager = linearLayoutManager
-        blog_list.adapter = mAdapter
+        blog_list.apply {
+            this.layoutManager = linearLayoutManager
+            this.adapter = mAdapter
+        }
 
+        /**
+         * API Live data observer
+         * */
         mViewModelBlogInformation.mBlogResponse.observe(this, Observer {
-            hideDialog()
-            swipeToRefresh.isRefreshing = false
-            if (!it.isError)
-                mAdapter.setList(it.data)
+            if (isSwipeToRefreshCall)
+                swipeToRefresh.isRefreshing = false
             else
-                Toast.makeText(this,somethingWentWrong,Toast.LENGTH_SHORT).show()
-
+                hideDialog()
+            mAdapter.setList(it.data)
         })
-
-
+        /**
+         * API status live data observer
+         * */
+        mViewModelBlogInformation.mBlogResponseStatus.observe(this, Observer {
+            it.let {
+                when (it.status) {
+                    Constant.statusFail -> {
+                        if (swipeToRefresh.isRefreshing)
+                            swipeToRefresh.isRefreshing = false
+                        hideDialog()
+                        toast(somethingWentWrong)
+                    }
+                    Constant.statusLoading ->
+                        showDialog()
+                }
+            }
+        })
     }
-
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setupDialog() {
@@ -111,19 +139,14 @@ class BlogInformationActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.M)
     private fun getBlogFromViewModel() {
 
-
         if (NetworkConnection.isNetworkConnected()) {
-            showDialog()
+            if (!isSwipeToRefreshCall)
+                showDialog()
             mViewModelBlogInformation.getBlogInformation()
         } else {
-            if (swipeToRefresh.isRefreshing) {
+            if (swipeToRefresh.isRefreshing)
                 swipeToRefresh.isRefreshing = false
-            }
-            Toast.makeText(
-                applicationContext,
-                getString(R.string.device_not_connected_to_internet),
-                Toast.LENGTH_LONG
-            ).show()
+            toast(getString(R.string.device_not_connected_to_internet))
         }
 
     }

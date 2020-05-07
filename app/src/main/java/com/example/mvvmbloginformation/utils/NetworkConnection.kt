@@ -5,7 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.mvvmbloginformation.application.ApplicationContext.Companion.context
+import com.example.mvvmbloginformation.application.ApplicationContext.Companion.appContext
 
 class NetworkConnection {
     companion object {
@@ -16,7 +16,7 @@ class NetworkConnection {
         fun isNetworkConnected(): Boolean {
 
             val connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
             val activeNetwork = connectivityManager.activeNetwork
 
@@ -27,7 +27,8 @@ class NetworkConnection {
         }
 
         fun isNetworkConnectedKitkat(): Boolean {
-            val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val cm =
+                appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             return cm.isActiveNetworkMetered
         }
     }

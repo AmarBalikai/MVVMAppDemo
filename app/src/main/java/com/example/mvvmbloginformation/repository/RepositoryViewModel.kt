@@ -9,14 +9,19 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class RepositoryViewModel {
-    fun retrieveBlogsData(objCallback: ResponseCallback) {
+    /**
+     * Method for API call
+     * */
+    fun retrieveBlogData(objCallback: ResponseCallback) {
         val listResponse: MutableLiveData<ModelBlogInformation> = MutableLiveData()
 
         val data: Call<ModelBlogInformation>? = ApiClient.build()?.getBlogList()
         val enqueue = data?.enqueue(object : Callback<ModelBlogInformation> {
-            override fun onResponse(call: Call<ModelBlogInformation>, response: Response<ModelBlogInformation>) {
+            override fun onResponse(
+                call: Call<ModelBlogInformation>,
+                response: Response<ModelBlogInformation>
+            ) {
                 if (response.isSuccessful) {
-
 
                     listResponse.value = response.body()
                     /**
@@ -25,6 +30,7 @@ class RepositoryViewModel {
                     objCallback.onSuccess(listResponse)
                 }
             }
+
             override fun onFailure(call: Call<ModelBlogInformation>, t: Throwable) {
                 /**
                  * Send failure response to viewModel
@@ -32,5 +38,6 @@ class RepositoryViewModel {
                 objCallback.onError(t.message)
             }
         })
+
     }
 }

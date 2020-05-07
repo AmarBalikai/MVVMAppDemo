@@ -5,7 +5,7 @@ import android.content.Context
 
 class ApplicationContext : Application() {
     companion object {
-        lateinit var context: Context
+        lateinit var appContext: Context
     }
 
     /**
@@ -13,6 +13,6 @@ class ApplicationContext : Application() {
      */
     override fun onCreate() {
         super.onCreate()
-        context = this
+        appContext = this
     }
 }
